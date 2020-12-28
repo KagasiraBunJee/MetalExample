@@ -7,6 +7,8 @@
 
 import MetalKit
 
+extension simd_float2: MetalSizable {}
+
 extension simd_float3: MetalSizable {
     static var random: Self {
         let r = Float(arc4random_uniform(256)) / 255.0;

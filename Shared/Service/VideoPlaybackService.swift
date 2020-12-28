@@ -12,7 +12,7 @@ import CoreImage
 @objc
 protocol VideoPlaybackDelegate {
     @objc optional func videoPlayback (playback: VideoPlaybackService, audioSampleBuffer: CMSampleBuffer?)
-    @objc optional func videoPlayback (playback: VideoPlaybackService, videoSampleBuffer: CMSampleBuffer?, timestamp: CMTime, delay: Double)
+    @objc optional func videoPlayback (playback: VideoPlaybackService, videoSampleBuffer: CMSampleBuffer?, timestamp: CMTime)
 }
 
 @objc
@@ -21,6 +21,7 @@ protocol VideoPlaybackService {
 
     func startReading()
     func requestSampleBuffer() -> CMSampleBuffer?
+    func requestAuidoSampleBuffer() -> CMSampleBuffer?
 }
 
 class VideoPlayback: VideoPlaybackService {
@@ -107,6 +108,10 @@ class VideoPlayback: VideoPlaybackService {
         debugPrint("added")
     }
     
+    func requestAuidoSampleBuffer() -> CMSampleBuffer? {
+        return audioAssetTrackOutput?.copyNextSampleBuffer()
+    }
+    
     func requestSampleBuffer() -> CMSampleBuffer? {
         guard let buffer = videoAssetTrackOutput?.copyNextSampleBuffer() else { return nil }
         setSampleBufferAttachments(buffer)
@@ -117,7 +122,7 @@ class VideoPlayback: VideoPlaybackService {
     
     func startReading() {
         assetReader.startReading()
-        return;
+        guard delegate != nil else { return }
         videoSamplesQueue.async { [weak self] in
             guard let videoOutput = self?.videoAssetTrackOutput,
 //                  let assetReader = self?.assetReader,
@@ -125,14 +130,11 @@ class VideoPlayback: VideoPlaybackService {
             else { return }
 
             var hasBuffer = true
-            var delay = 0.0
             while (hasBuffer) {
                 guard let buffer = videoOutput.copyNextSampleBuffer() else { hasBuffer = false; break; }
                 let timestamp = CMSampleBufferGetPresentationTimeStamp(buffer)
                 self?.setSampleBufferAttachments(buffer)
-//                CMSetAttachment(buffer, key: kCMSampleAttachmentKey_DisplayImmediately, value: kCFBooleanFalse, attachmentMode: kCMAttachmentMode_ShouldPropagate)
-                self?.delegate?.videoPlayback?(playback: this, videoSampleBuffer: buffer, timestamp: timestamp, delay: CMTimeGetSeconds(timestamp) - delay)
-                delay = CMTimeGetSeconds(timestamp)
+                self?.delegate?.videoPlayback?(playback: this, videoSampleBuffer: buffer, timestamp: timestamp)
 //                self?.delegate?.videoPlayback?(playback: this, videoSampleBuffer: buffer)
             }
             debugPrint("finish reading")

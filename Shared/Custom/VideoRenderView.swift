@@ -11,11 +11,10 @@ import AVFoundation
 
 struct VideoRenderView {
     
-    var displayLayer = AVSampleBufferDisplayLayer()
-    
     class Coordinator: NSObject {
         var parent: VideoRenderView
         private var videoService: VideoPlaybackService?
+        var displayLayer = AVSampleBufferDisplayLayer()
 
         init(_ parent: VideoRenderView) {
             self.parent = parent
@@ -24,9 +23,10 @@ struct VideoRenderView {
 //            guard let fileUrl = Bundle.main.path(forResource: "videoplayback", ofType: "mp4") else { debugPrint("no file");return }
 //            self.videoService = VideoPlayback(file: URL(fileURLWithPath: fileUrl))
 //            self.videoService?.startReading()
-//            parent.displayLayer.requestMediaDataWhenReady(on: DispatchQueue.main) { [weak self] in
+//            displayLayer.requestMediaDataWhenReady(on: DispatchQueue.main) { [weak self] in
+//                debugPrint("request")
 //                if let buffer = self?.videoService?.requestSampleBuffer() {
-//                    self?.parent.displayLayer.enqueue(buffer)
+//                    self?.displayLayer.enqueue(buffer)
 //                }
 //            }
         }
@@ -43,6 +43,7 @@ extension VideoRenderView: UIViewRepresentable {
     
     func makeUIView(context: Context) -> UIView {
         let view = UIView()
+        let displayLayer = context.coordinator.displayLayer
         view.layer.addSublayer(displayLayer)
         displayLayer.preventsDisplaySleepDuringVideoPlayback = true
         if let newTimebase = try? CMTimebase(masterClock: CMClockGetHostTimeClock()) {
@@ -51,11 +52,12 @@ extension VideoRenderView: UIViewRepresentable {
             debugPrint("new timebase", newTimebase)
             displayLayer.controlTimebase = newTimebase
         }
+        displayLayer.frame = CGRect(origin: .zero, size: CGSize(width: 400, height: 200))
         return view
     }
     
     func updateUIView(_ uiView: UIView, context: Context) {
-        displayLayer.frame = CGRect(origin: .zero, size: CGSize(width: 400, height: 200))
+//        displayLayer.frame = CGRect(origin: .zero, size: CGSize(width: 400, height: 200))
     }
 }
 #else

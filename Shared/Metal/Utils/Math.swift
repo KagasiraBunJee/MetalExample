@@ -27,4 +27,17 @@ struct Math {
         )
         return matrix;
     }
+    
+    static func makeOrthographicMatrix(left: Float, right: Float, bottom: Float, top: Float, near: Float, far: Float) -> [Float] {
+        let ral = right + left
+        let rsl = right - left
+        let tab = top + bottom
+        let tsb = top - bottom
+        let fan = far + near
+        let fsn = far - near
+        return [2.0 / rsl, 0.0, 0.0, 0.0,
+            0.0, 2.0 / tsb, 0.0, 0.0,
+            0.0, 0.0, -2.0 / fsn, 0.0,
+            -ral / rsl, -tab / tsb, -fan / fsn, 1.0]
+    }
 }

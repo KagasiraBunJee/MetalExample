@@ -1,0 +1,8 @@
+Pods/
+vendor/
+
+xcuserdata/
+fastlane/*.xml
+fastlane/test_output
+.bundle
+build/

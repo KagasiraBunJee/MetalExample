@@ -13,9 +13,7 @@ struct ProjectExamplesApp: App {
 
     var body: some Scene {
         WindowGroup {
-            MetalView()
-                .frame(width: 414, height: 718)
-//            MainView()
+            MainView()
 //            ContentView()
 //                .environment(\.managedObjectContext, persistenceController.container.viewContext)
         }

@@ -27,4 +27,14 @@ class MetalCustomView: MTKView {
         self.depthStencilPixelFormat = .depth32Float
         self.clearColor = .from(.orange)
     }
+    
+//    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+//        if touches.count == 1 {
+//            
+//        }
+//    }
+//    
+//    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+//        
+//    }
 }

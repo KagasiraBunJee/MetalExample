@@ -13,25 +13,28 @@ class Renderer: NSObject {
     var clearPass: MTLComputePipelineState?
     var drawDotsPass: MTLComputePipelineState?
     var depthStencilState: MTLDepthStencilState?
+    var samplerState: MTLSamplerState?
     
     let device: MTLDevice?
 
     var renderCanvasSize: CGSize = .zero
-    
     var objects: [Mesh] = []
+    var bufferManager: BufferManager
     
-    var particles = [MetalParticle]()
-    var emmitersBuffer: MTLBuffer?
+    let panSensivity:Float = 10.0
+    var lastPanLocation: CGPoint!
     
-    var time: Float = 0
+//    var particles = [MetalParticle]()
+//    var emmitersBuffer: MTLBuffer?
     
-    var mtx: matrix_float4x4 = .init()
+//    var time: Float = 0
+//    var mtx: matrix_float4x4 = .init()
     
     var aspectRatio: Float {
         didSet {
             sceneProjection = Math.perspective(
                 degreesFov: 45,
-                aspectRatio: Float(414)/Float(718),
+                aspectRatio: aspectRatio,
                 near: 0.1,
                 far: 1000)
         }
@@ -46,10 +49,28 @@ class Renderer: NSObject {
             aspectRatio: self.aspectRatio,
             near: 0.1,
             far: 1000)
+        guard let device = device else { fatalError(" no device ") }
+        bufferManager = BufferManager(device: device, maxBuffersInFlight: 3)
         super.init()
-        
-        commandQueue = self.device?.makeCommandQueue()
         createPipelineState()
+    }
+    
+    @objc
+    func pan(panGesture: UIPanGestureRecognizer) {
+        
+        switch (panGesture.state) {
+        case .began:
+            lastPanLocation = panGesture.location(in: panGesture.view)
+        case .changed:
+            let pointInView = panGesture.location(in: panGesture.view)
+            let xDelta = Float((lastPanLocation.x - pointInView.x)/renderCanvasSize.width) * panSensivity
+            let yDelta = Float((lastPanLocation.y - pointInView.y)/renderCanvasSize.height) * panSensivity
+            objects[0].rotation.y -= xDelta
+            objects[0].rotation.x -= yDelta
+            lastPanLocation = pointInView
+            break
+        default: break
+        }
     }
     
     func add(object: Mesh) {
@@ -73,7 +94,17 @@ class Renderer: NSObject {
         //color
         vertexDescriptor.attributes[1].format = .float4
         vertexDescriptor.attributes[1].bufferIndex = 0
-        vertexDescriptor.attributes[1].offset = SIMD3<Float>.size
+        vertexDescriptor.attributes[1].offset = simd_float3.size
+        
+        //texCoords
+        vertexDescriptor.attributes[2].format = .float2
+        vertexDescriptor.attributes[2].bufferIndex = 0
+        vertexDescriptor.attributes[2].offset = simd_float3.size + simd_float4.size
+        
+        //hasTexture
+        vertexDescriptor.attributes[3].format = .int
+        vertexDescriptor.attributes[3].bufferIndex = 0
+        vertexDescriptor.attributes[3].offset = simd_float3.size + simd_float4.size + simd_float2.size
         
         vertexDescriptor.layouts[0].stride = Vertex.stride
         
@@ -90,53 +121,50 @@ class Renderer: NSObject {
         depthStencilDescriptor.isDepthWriteEnabled = true
         depthStencilDescriptor.depthCompareFunction = .less
         depthStencilState = device?.makeDepthStencilState(descriptor: depthStencilDescriptor)
-        if let clearFunc = clearFunc {
-            clearPass = try? device?.makeComputePipelineState(function: clearFunc)
-        }
+        
+        let samplerDescriptor = MTLSamplerDescriptor()
+        samplerDescriptor.minFilter = MTLSamplerMinMagFilter.nearest
+        samplerDescriptor.magFilter = MTLSamplerMinMagFilter.nearest
+        samplerDescriptor.mipFilter = MTLSamplerMipFilter.nearest
+        samplerDescriptor.maxAnisotropy = 1
+        samplerDescriptor.sAddressMode = MTLSamplerAddressMode.clampToEdge
+        samplerDescriptor.tAddressMode = MTLSamplerAddressMode.clampToEdge
+        samplerDescriptor.rAddressMode = MTLSamplerAddressMode.clampToEdge
+        samplerDescriptor.normalizedCoordinates = true
+        samplerDescriptor.lodMinClamp = 0
+        samplerDescriptor.lodMaxClamp = FLT_MAX
+        
         do {
-            
+            if let clearFunc = clearFunc {
+                clearPass = try device?.makeComputePipelineState(function: clearFunc)
+            }
             if let drawDots = drawDots {
                 drawDotsPass = try device?.makeComputePipelineState(function: drawDots)
             }
+            samplerState = try device?.makeSamplerState(descriptor: samplerDescriptor)
         } catch let error {
             debugPrint("makeComputePipelineState drawDots error: ", error)
         }
+        commandQueue = self.device?.makeCommandQueue()
         
-        let emmiters = [MetalRoseParticleEmitter().particles,
-                        MetalRoseParticleEmitter().particles,
-                        MetalRoseParticleEmitter().particles,
-                        MetalRoseParticleEmitter().particles,
-                        MetalRoseParticleEmitter().particles,
-                        MetalRoseParticleEmitter().particles,
-                        MetalRoseParticleEmitter().particles,
-                        MetalRoseParticleEmitter().particles,
-        ]
-        particles = emmiters.flatMap { $0 }
+//        let firstBuffer = bufferManager.prepareBuffer(length: Vertex.stride(CubeObject.cubeVertecies.count), label: "cube")
+        
+//        let emmiters = [MetalRoseParticleEmitter().particles,
+//                        MetalRoseParticleEmitter().particles,
+//                        MetalRoseParticleEmitter().particles,
+//                        MetalRoseParticleEmitter().particles,
+//                        MetalRoseParticleEmitter().particles,
+//                        MetalRoseParticleEmitter().particles,
+//                        MetalRoseParticleEmitter().particles,
+//                        MetalRoseParticleEmitter().particles,
+//        ]
+//        particles = emmiters.flatMap { $0 }
 //        mtx = makeOrthographicMatrix(left: 0, right: 414, bottom: 0, top: 414, near: -1, far: 1)
         
         //buffer for particles
-        emmitersBuffer = device?.makeBuffer(bytes: particles,
-                                            length: MemoryLayout<MetalParticle>.stride * particles.count,
-                                            options: .cpuCacheModeWriteCombined)
-    }
-    
-    func makeOrthographicMatrix(left: Float, right: Float, bottom: Float, top: Float, near: Float, far: Float) -> [Float] {
-          let ral = right + left
-          let rsl = right - left
-          let tab = top + bottom
-          let tsb = top - bottom
-          let fan = far + near
-          let fsn = far - near
-        return [2.0 / rsl, 0.0, 0.0, 0.0,
-            0.0, 2.0 / tsb, 0.0, 0.0,
-            0.0, 0.0, -2.0 / fsn, 0.0,
-            -ral / rsl, -tab / tsb, -fan / fsn, 1.0]
-//        return matrix_float4x4(columns: (
-//            simd_float4(2.0 / rsl, 0.0, 0.0, 0.0),
-//            simd_float4(0.0, 2.0 / tsb, 0.0, 0.0),
-//            simd_float4(0.0, 0.0, -2.0 / fsn, 0.0),
-//            simd_float4(-ral / rsl, -tab / tsb, -fan / fsn, 1.0)
-//        ))
+//        emmitersBuffer = device?.makeBuffer(bytes: particles,
+//                                            length: MemoryLayout<MetalParticle>.stride * particles.count,
+//                                            options: .cpuCacheModeWriteCombined)
     }
 }
 
@@ -144,16 +172,7 @@ extension Renderer: MTKViewDelegate {
     
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
         renderCanvasSize = size
-//        add(object: GameObject(vertices: [
-//            Vertex(position: simd_float3(0.5, 0.5, 0), color: simd_float4(1, 0, 0, 1)),
-//            Vertex(position: simd_float3(-0.5, 0.5, 0), color: simd_float4(0, 1, 0, 1)),
-//            Vertex(position: simd_float3(-0.5, -0.5, 0), color: simd_float4(0, 0, 1, 1)),
-//
-//            Vertex(position: simd_float3(0.5, 0.5, 0), color: simd_float4(1, 0, 0, 1)),
-//            Vertex(position: simd_float3(-0.5, -0.5, 0), color: simd_float4(0, 0, 1, 1)),
-//            Vertex(position: simd_float3(0.5, -0.5, 0), color: simd_float4(1, 0, 1, 1))
-//        ]))
-//        add(object: CubeObject())
+        aspectRatio = Float(size.width/size.height)
     }
 
     func draw(in view: MTKView) {
@@ -163,14 +182,18 @@ extension Renderer: MTKViewDelegate {
 //              let clearPass = self.clearPass,
 //              let drawDotsPass = self.drawDotsPass
         else { return }
+        _ = bufferManager.queueReuseSemaphor.wait(timeout: DispatchTime.distantFuture)
         let commandBuffer = commandQueue?.makeCommandBuffer()
         
         guard let renderCommandEncoder = commandBuffer?.makeRenderCommandEncoder(descriptor: renderPassDescriptor) else { return }
         renderCommandEncoder.setRenderPipelineState(renderPipelineState)
-//        renderCommandEncoder.setDepthStencilState(depthStencilState)
+        renderCommandEncoder.setDepthStencilState(depthStencilState)
         for object in objects {
             object.encode(renderCommandEncoder)
             object.update(deltaTime: 1.0/Float(view.preferredFramesPerSecond))
+            if let samplerState = samplerState {
+                renderCommandEncoder.setFragmentSamplerState(samplerState, index: 0)
+            }
             renderCommandEncoder.setVertexBytes(&sceneProjection, length: matrix_float4x4.stride, index: 2)
             renderCommandEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: object.vertexCount)
         }
@@ -191,6 +214,10 @@ extension Renderer: MTKViewDelegate {
 //        let threadsPerThreadGroup = MTLSize(width: w, height: 1, depth: 1)
 //        computeCommandEncoder?.dispatchThreads(threadPerGrid, threadsPerThreadgroup: threadsPerThreadGroup)
 //        computeCommandEncoder?.endEncoding()
+        
+        commandBuffer?.addCompletedHandler({ [weak self] (_) in
+            self?.bufferManager.queueReuseSemaphor.signal()
+        })
         
         commandBuffer?.present(drawable)
         commandBuffer?.commit()

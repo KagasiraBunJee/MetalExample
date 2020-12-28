@@ -10,6 +10,8 @@ import MetalKit
 struct Vertex: MetalSizable {
     var position: simd_float3
     var color: simd_float4
+    var texCoord: simd_float2 = .zero
+    var haveTexture: Int = 0
 }
 
 protocol Mesh: class {
@@ -40,13 +42,18 @@ class GameObject: Mesh {
         return vertices.count
     }
     
-    init(vertices: [Vertex]) {
+    init(vertices: [Vertex], vertexBuffer: MTLBuffer?) {
         self.vertices = vertices
-        vertexBuffer = Engine.device?.makeBuffer(bytes: vertices, length: Vertex.stride(vertices.count), options: .cpuCacheModeWriteCombined)
-        objectMatrixBuffer = Engine.device?.makeBuffer(length: matrix_float4x4.stride, options: .cpuCacheModeWriteCombined)
+        if let vertexBuffer = vertexBuffer {
+            self.vertexBuffer = vertexBuffer
+        } else {
+            self.vertexBuffer = Engine.device?.makeBuffer(bytes: vertices, length: Vertex.stride(vertices.count), options: .storageModeShared)
+        }
+        objectMatrixBuffer = Engine.device?.makeBuffer(length: matrix_float4x4.stride, options: .storageModeShared)
     }
     
     func encode(_ encoder: MTLRenderCommandEncoder) {
+        memcpy(vertexBuffer?.contents(), &vertices, Vertex.stride(vertices.count))
         encoder.setVertexBuffer(objectMatrixBuffer, offset: 0, index: 1)
         encoder.setVertexBuffer(vertexBuffer, offset: 0, index: 0)
     }
