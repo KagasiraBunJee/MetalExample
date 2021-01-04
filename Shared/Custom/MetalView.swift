@@ -35,6 +35,7 @@ struct MetalView {
             self.renderer = Renderer(device: Engine.device, screenAspectRatio: scaleRatio)
             super.init()
             self.renderer.add(object: cube)
+            return
             let mixNode = AVAudioMixerNode()
 //            guard let fileUrl = Bundle.main.path(forResource: "videoplayback", ofType: "mp4") else { debugPrint("no file");return }
 //            self.videoService = VideoPlayback(file: URL(fileURLWithPath: fileUrl))
@@ -151,14 +152,14 @@ struct MetalView {
 //                self?.audioPlayer.scheduleBuffer(pcmBuffer, at: nil, options: [], completionHandler: nil)
                 
                 self?.displayLayer.enqueue(buffer)
-                self?.cube.writePixelBuffer(buffer: buffer)
+//                self?.cube.writePixelBuffer(buffer: buffer)
             }
         }
         
         func videoPlayback(playback: VideoPlaybackService, videoSampleBuffer: CMSampleBuffer?, timestamp: CMTime) {
 //            _ = semaphor.wait(timeout: .distantFuture)
             if let buffer = videoSampleBuffer {
-                cube.writePixelBuffer(buffer: buffer)
+//                cube.writePixelBuffer(buffer: buffer)
             }
         }
     }

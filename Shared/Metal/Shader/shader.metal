@@ -24,7 +24,7 @@ struct RasterizerData {
 
 vertex RasterizerData first_vertex_shader(const VertexIn vertexIn [[ stage_in ]],
                                           const device float4x4& objectCoord [[ buffer(1) ]],
-                                          constant float4x4 &projection [[ buffer(2) ]]) {
+                                          constant float4x4 &projection [[ buffer(0) ]]) {
 //                                          constant MeshCoords &objectCoord [[ buffer(1) ]]) {
     RasterizerData rd;
     rd.position = projection * objectCoord * float4(vertexIn.position, 1);

@@ -88,25 +88,25 @@ class Renderer: NSObject {
         
         //position
         vertexDescriptor.attributes[0].format = .float3
-        vertexDescriptor.attributes[0].bufferIndex = 0
+        vertexDescriptor.attributes[0].bufferIndex = 2
         vertexDescriptor.attributes[0].offset = 0
         
         //color
         vertexDescriptor.attributes[1].format = .float4
-        vertexDescriptor.attributes[1].bufferIndex = 0
+        vertexDescriptor.attributes[1].bufferIndex = 2
         vertexDescriptor.attributes[1].offset = simd_float3.size
         
         //texCoords
         vertexDescriptor.attributes[2].format = .float2
-        vertexDescriptor.attributes[2].bufferIndex = 0
+        vertexDescriptor.attributes[2].bufferIndex = 2
         vertexDescriptor.attributes[2].offset = simd_float3.size + simd_float4.size
         
         //hasTexture
         vertexDescriptor.attributes[3].format = .int
-        vertexDescriptor.attributes[3].bufferIndex = 0
+        vertexDescriptor.attributes[3].bufferIndex = 2
         vertexDescriptor.attributes[3].offset = simd_float3.size + simd_float4.size + simd_float2.size
         
-        vertexDescriptor.layouts[0].stride = Vertex.stride
+        vertexDescriptor.layouts[2].stride = Vertex.stride
         
         let renderPipelineStateDescriptor = MTLRenderPipelineDescriptor()
         renderPipelineStateDescriptor.colorAttachments[0].pixelFormat = .bgra8Unorm
@@ -194,7 +194,7 @@ extension Renderer: MTKViewDelegate {
             if let samplerState = samplerState {
                 renderCommandEncoder.setFragmentSamplerState(samplerState, index: 0)
             }
-            renderCommandEncoder.setVertexBytes(&sceneProjection, length: matrix_float4x4.stride, index: 2)
+            renderCommandEncoder.setVertexBytes(&sceneProjection, length: matrix_float4x4.stride, index: 0)
             renderCommandEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: object.vertexCount)
         }
         renderCommandEncoder.endEncoding()

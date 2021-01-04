@@ -30,7 +30,15 @@ class GameObject: Mesh {
     private var vertices: [Vertex]
     private var vertexBuffer: MTLBuffer?
     private var objectMatrixBuffer: MTLBuffer?
-    private var objectMatrix = matrix_identity_float4x4
+    private var objectMatrix: matrix_float4x4 {
+        var initial = matrix_identity_float4x4
+        initial.translate(position)
+        initial.scale(scale)
+        initial.rotate(angle: rotation.x, .xAxis)
+        initial.rotate(angle: rotation.y, .yAxis)
+        initial.rotate(angle: rotation.z, .zAxis)
+        return initial
+    }
 
     var position: simd_float3 = .zero
     var scale: simd_float3 = .one
@@ -54,22 +62,12 @@ class GameObject: Mesh {
     
     func encode(_ encoder: MTLRenderCommandEncoder) {
         memcpy(vertexBuffer?.contents(), &vertices, Vertex.stride(vertices.count))
+        var matrix = objectMatrix
+        memcpy(objectMatrixBuffer?.contents(), &matrix, matrix_float4x4.stride)
         encoder.setVertexBuffer(objectMatrixBuffer, offset: 0, index: 1)
-        encoder.setVertexBuffer(vertexBuffer, offset: 0, index: 0)
+        encoder.setVertexBuffer(vertexBuffer, offset: 0, index: 2)
     }
     
     func update(deltaTime: Float) {
-        updateCoords()
-    }
-    
-    private func updateCoords() {
-        var initial = matrix_identity_float4x4
-        initial.translate(position)
-        initial.scale(scale)
-        initial.rotate(angle: rotation.x, .xAxis)
-        initial.rotate(angle: rotation.y, .yAxis)
-        initial.rotate(angle: rotation.z, .zAxis)
-        objectMatrix = initial
-        memcpy(objectMatrixBuffer?.contents(), &objectMatrix, matrix_float4x4.stride)
     }
 }
