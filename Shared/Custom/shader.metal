@@ -8,6 +8,14 @@
 #include <metal_stdlib>
 using namespace metal;
 
+struct Uniforms {
+  float time;
+  int2 resolution;
+  float4x4 view;
+  float4x4 inverseView;
+  float4x4 viewProjection;
+};
+
 struct VertexIn {
     float3 position [[ attribute(0) ]];
     float4 color [[ attribute(1) ]];
@@ -22,12 +30,12 @@ struct RasterizerData {
     int haveTexture;
 };
 
-vertex RasterizerData first_vertex_shader(const VertexIn vertexIn [[ stage_in ]],
-                                          const device float4x4& objectCoord [[ buffer(1) ]],
-                                          constant float4x4 &projection [[ buffer(2) ]]) {
+vertex RasterizerData first_vertex_shader(const device Uniforms& uniforms [[ buffer(0) ]],
+                                          const VertexIn vertexIn [[ stage_in ]],
+                                          const device float4x4& objectCoord [[ buffer(1) ]]) {
 //                                          constant MeshCoords &objectCoord [[ buffer(1) ]]) {
     RasterizerData rd;
-    rd.position = projection * objectCoord * float4(vertexIn.position, 1);
+    rd.position = uniforms.viewProjection * objectCoord * float4(vertexIn.position, 1);
     rd.color = vertexIn.color;
     rd.texCoords = vertexIn.texCoords;
     rd.haveTexture = vertexIn.haveTexture;
@@ -37,6 +45,7 @@ vertex RasterizerData first_vertex_shader(const VertexIn vertexIn [[ stage_in ]]
 fragment float4 first_fragment_shader(RasterizerData rd [[ stage_in ]],
                                      texture2d<half> colorTexture [[ texture(0) ]],
                                       sampler           sampler2D [[ sampler(0) ]]) {
+    return float4(rd.color);
     // Sample the texture to obtain a color
     const half4 colorSample = colorTexture.sample(sampler2D, rd.texCoords);
     if (!rd.haveTexture) {

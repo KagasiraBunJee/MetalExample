@@ -29,14 +29,21 @@ protocol Mesh: class {
 class GameObject: Mesh {
     private var vertices: [Vertex]
     private var vertexBuffer: MTLBuffer?
-    private var objectMatrixBuffer: MTLBuffer?
-    private var objectMatrix = matrix_identity_float4x4
+//    private var objectMatrixBuffer: MTLBuffer?
+    private var pipelineState: MTLRenderPipelineState?
+    private var objectMatrix: matrix_float4x4 {
+        var initial = matrix_identity_float4x4
+        initial.translate(position)
+        initial.scale(scale)
+        initial.rotate(angle: rotation.x, .xAxis)
+        initial.rotate(angle: rotation.y, .yAxis)
+        initial.rotate(angle: rotation.z, .zAxis)
+        return initial
+    }
 
     var position: simd_float3 = .zero
     var scale: simd_float3 = .one
     var rotation: simd_float3 = .zero
-    
-    var timer: Timer?
     
     var vertexCount: Int {
         return vertices.count
@@ -44,32 +51,57 @@ class GameObject: Mesh {
     
     init(vertices: [Vertex], vertexBuffer: MTLBuffer?) {
         self.vertices = vertices
-        if let vertexBuffer = vertexBuffer {
-            self.vertexBuffer = vertexBuffer
-        } else {
-            self.vertexBuffer = Engine.device?.makeBuffer(bytes: vertices, length: Vertex.stride(vertices.count), options: .storageModeShared)
-        }
-        objectMatrixBuffer = Engine.device?.makeBuffer(length: matrix_float4x4.stride, options: .storageModeShared)
+        self.vertexBuffer = Engine.device?.makeBuffer(bytes: vertices, length: Vertex.stride(vertices.count), options: .storageModeShared)
+//        objectMatrixBuffer = Engine.device?.makeBuffer(length: matrix_float4x4.stride, options: .storageModeShared)
+        
+        let library = Engine.device?.makeDefaultLibrary()
+        let vertexFunction = library?.makeFunction(name: "first_vertex_shader")
+        let fragmentFunction = library?.makeFunction(name: "first_fragment_shader")
+        
+        let vertexDescriptor = MTLVertexDescriptor()
+        
+        //position
+        vertexDescriptor.attributes[0].format = .float3
+        vertexDescriptor.attributes[0].bufferIndex = 2
+        vertexDescriptor.attributes[0].offset = 0
+        
+        //color
+        vertexDescriptor.attributes[1].format = .float4
+        vertexDescriptor.attributes[1].bufferIndex = 2
+        vertexDescriptor.attributes[1].offset = simd_float3.size
+        
+        //texCoords
+        vertexDescriptor.attributes[2].format = .float2
+        vertexDescriptor.attributes[2].bufferIndex = 2
+        vertexDescriptor.attributes[2].offset = simd_float3.size + simd_float4.size
+        
+        //hasTexture
+        vertexDescriptor.attributes[3].format = .int
+        vertexDescriptor.attributes[3].bufferIndex = 2
+        vertexDescriptor.attributes[3].offset = simd_float3.size + simd_float4.size + simd_float2.size
+        
+        vertexDescriptor.layouts[2].stride = Vertex.stride
+        
+        let renderPipelineStateDescriptor = MTLRenderPipelineDescriptor()
+        renderPipelineStateDescriptor.colorAttachments[0].pixelFormat = .bgra8Unorm
+        renderPipelineStateDescriptor.vertexFunction = vertexFunction
+        renderPipelineStateDescriptor.fragmentFunction = fragmentFunction
+        renderPipelineStateDescriptor.vertexDescriptor = vertexDescriptor
+        renderPipelineStateDescriptor.depthAttachmentPixelFormat = .depth32Float
+        
+        pipelineState = try? Engine.device?.makeRenderPipelineState(descriptor: renderPipelineStateDescriptor)
     }
     
     func encode(_ encoder: MTLRenderCommandEncoder) {
+        guard let pipelineState = pipelineState else { return }
+        encoder.setRenderPipelineState(pipelineState)
         memcpy(vertexBuffer?.contents(), &vertices, Vertex.stride(vertices.count))
-        encoder.setVertexBuffer(objectMatrixBuffer, offset: 0, index: 1)
-        encoder.setVertexBuffer(vertexBuffer, offset: 0, index: 0)
+//        var matrix = objectMatrix
+//        memcpy(objectMatrixBuffer?.contents(), &matrix, Vertex.stride(vertices.count))
+//        encoder.setVertexBuffer(objectMatrixBuffer, offset: 0, index: 1)
+        encoder.setVertexBuffer(vertexBuffer, offset: 0, index: 2)
     }
     
     func update(deltaTime: Float) {
-        updateCoords()
-    }
-    
-    private func updateCoords() {
-        var initial = matrix_identity_float4x4
-        initial.translate(position)
-        initial.scale(scale)
-        initial.rotate(angle: rotation.x, .xAxis)
-        initial.rotate(angle: rotation.y, .yAxis)
-        initial.rotate(angle: rotation.z, .zAxis)
-        objectMatrix = initial
-        memcpy(objectMatrixBuffer?.contents(), &objectMatrix, matrix_float4x4.stride)
     }
 }

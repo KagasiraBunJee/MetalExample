@@ -33,8 +33,10 @@ struct MetalView {
         init(parent: MetalView, scaleRatio: Float) {
             self.parent = parent
             self.renderer = Renderer(device: Engine.device, screenAspectRatio: scaleRatio)
+            self.renderer.scene.camera.origin = [0, 0, 7]
             super.init()
             self.renderer.add(object: cube)
+            return
             let mixNode = AVAudioMixerNode()
 //            guard let fileUrl = Bundle.main.path(forResource: "videoplayback", ofType: "mp4") else { debugPrint("no file");return }
 //            self.videoService = VideoPlayback(file: URL(fileURLWithPath: fileUrl))

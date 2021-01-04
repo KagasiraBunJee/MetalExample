@@ -6,6 +6,7 @@
 //
 
 import MetalKit
+import GLKit
 
 struct Math {
     static func perspective(degreesFov: Float, aspectRatio: Float, near: Float, far: Float) -> matrix_float4x4 {
@@ -28,7 +29,7 @@ struct Math {
         return matrix;
     }
     
-    static func makeOrthographicMatrix(left: Float, right: Float, bottom: Float, top: Float, near: Float, far: Float) -> [Float] {
+    static func orthographic(left: Float, right: Float, bottom: Float, top: Float, near: Float, far: Float) -> [Float] {
         let ral = right + left
         let rsl = right - left
         let tab = top + bottom
@@ -40,4 +41,24 @@ struct Math {
             0.0, 0.0, -2.0 / fsn, 0.0,
             -ral / rsl, -tab / tsb, -fan / fsn, 1.0]
     }
+    
+    static func makeLook(
+        eye: simd_float3,
+        look: simd_float3,
+        up: simd_float3
+      ) -> matrix_float4x4 {
+
+        let target = eye + look
+        return GLKMatrix4MakeLookAt(
+          eye.x,
+          eye.y,
+          eye.z,
+          target.x,
+          target.y,
+          target.z,
+          up.x,
+          up.y,
+          up.z
+        ).to_matrix_float4x4()
+      }
 }
