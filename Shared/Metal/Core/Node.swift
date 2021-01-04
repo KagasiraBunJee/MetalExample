@@ -10,35 +10,33 @@ import simd
 
 class Node: CoordProps {
     
-    private var children: [Node] = []
+    var children: [Node] = []
     
     var position: simd_float3 = .zero
     var scale: simd_float3 = .one
-    var rotation: simd_float3 = .zero
+    var rotation: simd_quatf = .identity
     var objectMatrix: matrix_float4x4 {
         var result = matrix_identity_float4x4
         result.translate(position)
         result.scale(scale)
-        result.rotate(angle: rotation.x, .xAxis)
-        result.rotate(angle: rotation.y, .yAxis)
-        result.rotate(angle: rotation.z, .zAxis)
+        result.rotate(quat: rotation)
         return result
     }
     
     var object: Mesh?
-
-    private func updateCoords() {
-        
-//        objectMatrix = result
-//        memcpy(objectMatrixBuffer?.contents(), &objectMatrix, matrix_float4x4.stride)
+    
+    func addChild(node: Node) {
+        children.append(node)
     }
 }
 
 extension Node: Renderable {
     func render(time: Float, renderer: Renderer, encoder: MTLRenderCommandEncoder, parentTransform: matrix_float4x4) {
+        rotation *= simd_quatf(angle: Float(15).radians * time, axis: [0.5, 1, -1])
         var currentTransform = parentTransform * objectMatrix
         if let gameObject = self.object {
-            encoder.setVertexBytes(&currentTransform, length: matrix_float4x4.size, index: 1)
+//            rotation.x += sin(time)
+            encoder.setVertexBytes(&currentTransform, length: matrix_float4x4.stride, index: 1)
             gameObject.encode(encoder)
         }
         for node in children {

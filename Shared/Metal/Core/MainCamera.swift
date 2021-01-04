@@ -29,19 +29,15 @@ class MainCamera {
                                 far: zFar)
     }
     
-//    public var viewMatrix: matrix_float4x4 {
-//        if buildView {
-//          buildView = false
-//          _viewMatrix = Math.makeLook(eye: origin, look: look, up: up)
-//        }
-//        return _viewMatrix
-//    }
-    
     public var viewMatrix: matrix_float4x4 {
-        var identity = matrix_identity_float4x4
-        identity.translate(-origin)
-        return identity
+        return Math.makeLook(eye: origin, look: look, up: up)
     }
+    
+//    public var viewMatrix: matrix_float4x4 {
+//        var identity = matrix_identity_float4x4
+//        identity.translate(-origin)
+//        return identity
+//    }
     
     init(origin: simd_float3,
          look: simd_float3,

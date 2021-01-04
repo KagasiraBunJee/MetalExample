@@ -9,10 +9,10 @@ import MetalKit
 
 class RendererScene: Renderable, Updatable {
     let root = Node()
-    var camera = MainCamera(origin: [0, 0, 0],
+    var camera = MainCamera(origin: [0, 1, 5],
                             look: [0, 0, -1],
                             up: [0, 1, 0],
-                            fovYDegrees: 45,
+                            fovYDegrees: 50,
                             aspectRatio: 1.0,
                             zNear: 0.001,
                             zFar: 1000.0)

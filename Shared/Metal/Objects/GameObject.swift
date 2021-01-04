@@ -96,12 +96,11 @@ class GameObject: Mesh {
         guard let pipelineState = pipelineState else { return }
         encoder.setRenderPipelineState(pipelineState)
         memcpy(vertexBuffer?.contents(), &vertices, Vertex.stride(vertices.count))
-//        var matrix = objectMatrix
-//        memcpy(objectMatrixBuffer?.contents(), &matrix, Vertex.stride(vertices.count))
-//        encoder.setVertexBuffer(objectMatrixBuffer, offset: 0, index: 1)
         encoder.setVertexBuffer(vertexBuffer, offset: 0, index: 2)
+        encoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: vertexCount)
     }
     
     func update(deltaTime: Float) {
+        position.x += sin(deltaTime)
     }
 }
