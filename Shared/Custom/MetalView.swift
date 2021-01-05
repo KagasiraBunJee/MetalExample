@@ -34,9 +34,6 @@ extension MetalView: UIViewRepresentable {
     func makeUIView(context: Context) -> MetalCustomView {
         let view = MetalCustomView(frame: .zero, device: nil)
         
-        let pan = UIPanGestureRecognizer(target: context.coordinator.renderer, action: #selector(context.coordinator.renderer.pan))
-        view.addGestureRecognizer(pan)
-        
         view.delegate = context.coordinator.renderer
         context.coordinator.renderer.aspectRatio = Float(view.contentScaleFactor)
         return view
