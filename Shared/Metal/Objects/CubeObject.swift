@@ -27,31 +27,31 @@ class CubeObject: GameObject {
         simd_float4(.random, 1),
         
         // back
-        simd_float4([0.33, 0.33, 0.33], 1),
+        simd_float4([13, 13, 13], 1),
     ]
     
     static var cubeVertecies = [
         // Left
 //        Vertex(position: simd_float3(-1, -1, -1), color: CubeObject.sideColors[0]),
 //        Vertex(position: simd_float3(-1, -1, 1), color: CubeObject.sideColors[0]),
-        Vertex(position: simd_float3(-1, -0.3, -1), color: CubeObject.sideColors[0]),
-        Vertex(position: simd_float3(-1, -0.3, 1), color: CubeObject.sideColors[0]),
+        Vertex(position: simd_float3(-1, -1, -1), color: CubeObject.sideColors[0]),
+        Vertex(position: simd_float3(-1, -1, 1), color: CubeObject.sideColors[0]),
         Vertex(position: simd_float3(-1, 1, 1), color: CubeObject.sideColors[0]),
 //        Vertex(position: simd_float3(-1, -1, -1), color: CubeObject.sideColors[0]),
-        Vertex(position: simd_float3(-1, -0.3, -1), color: CubeObject.sideColors[0]),
+        Vertex(position: simd_float3(-1, -1, -1), color: CubeObject.sideColors[0]),
         Vertex(position: simd_float3(-1, 1, 1), color: CubeObject.sideColors[0]),
         Vertex(position: simd_float3(-1, 1, -1), color: CubeObject.sideColors[0]),
         
         // Right
         Vertex(position: simd_float3(1, 1, 1), color: CubeObject.sideColors[1]),
 //        Vertex(position: simd_float3(1, -1, -1), color: CubeObject.sideColors[1]),
-        Vertex(position: simd_float3(1, -0.3, -1), color: CubeObject.sideColors[1]),
+        Vertex(position: simd_float3(1, -1, -1), color: CubeObject.sideColors[1]),
         Vertex(position: simd_float3(1, 1, -1), color: CubeObject.sideColors[1]),
 //        Vertex(position: simd_float3(1, -1, -1), color: CubeObject.sideColors[1]),
-        Vertex(position: simd_float3(1, -0.3, -1), color: CubeObject.sideColors[1]),
+        Vertex(position: simd_float3(1, -1, -1), color: CubeObject.sideColors[1]),
         Vertex(position: simd_float3(1, 1, 1), color: CubeObject.sideColors[1]),
 //        Vertex(position: simd_float3(1, -1, 1), color: CubeObject.sideColors[1]),
-        Vertex(position: simd_float3(1, -0.3, 1), color: CubeObject.sideColors[1]),
+        Vertex(position: simd_float3(1, -1, 1), color: CubeObject.sideColors[1]),
         
         // Top
         Vertex(position: simd_float3(1, 1, 1), color: CubeObject.sideColors[2]),
@@ -62,32 +62,32 @@ class CubeObject: GameObject {
         Vertex(position: simd_float3(-1, 1, 1), color: CubeObject.sideColors[2]),
         
         // Bottom
-        Vertex(position: simd_float3(1, -0.3, 1), color: CubeObject.sideColors[3]),
-        Vertex(position: simd_float3(-1, -0.3, -1), color: CubeObject.sideColors[3]),
-        Vertex(position: simd_float3(1, -0.3, -1), color: CubeObject.sideColors[3]),
-        Vertex(position: simd_float3(1, -0.3, 1), color: CubeObject.sideColors[3]),
-        Vertex(position: simd_float3(-1, -0.3, 1), color: CubeObject.sideColors[3]),
-        Vertex(position: simd_float3(-1, -0.3, -1), color: CubeObject.sideColors[3]),
+        Vertex(position: simd_float3(1, -1, 1), color: CubeObject.sideColors[3]),
+        Vertex(position: simd_float3(-1, -1, -1), color: CubeObject.sideColors[3]),
+        Vertex(position: simd_float3(1, -1, -1), color: CubeObject.sideColors[3]),
+        Vertex(position: simd_float3(1, -1, 1), color: CubeObject.sideColors[3]),
+        Vertex(position: simd_float3(-1, -1, 1), color: CubeObject.sideColors[3]),
+        Vertex(position: simd_float3(-1, -1, -1), color: CubeObject.sideColors[3]),
         
         // Back
         Vertex(position: simd_float3(1, 1, -1), color: CubeObject.sideColors[4]),
 //        Vertex(position: simd_float3(-1, -1, -1), color: CubeObject.sideColors[4]),
-        Vertex(position: simd_float3(-1, -0.3, -1), color: CubeObject.sideColors[4]),
+        Vertex(position: simd_float3(-1, -1, -1), color: CubeObject.sideColors[4]),
         Vertex(position: simd_float3(-1, 1, -1), color: CubeObject.sideColors[4]),
         Vertex(position: simd_float3(1, 1, -1), color: CubeObject.sideColors[4]),
 //        Vertex(position: simd_float3(1, -1, -1), color: CubeObject.sideColors[4]),
-        Vertex(position: simd_float3(1, -0.3, -1), color: CubeObject.sideColors[4]),
+        Vertex(position: simd_float3(1, -1, -1), color: CubeObject.sideColors[4]),
 //        Vertex(position: simd_float3(-1, -1, -1), color: CubeObject.sideColors[4]),
-        Vertex(position: simd_float3(-1, -0.3, -1), color: CubeObject.sideColors[4]),
+        Vertex(position: simd_float3(-1, -1, -1), color: CubeObject.sideColors[4]),
         
         // Front
-        Vertex(position: simd_float3(1, 1, 1), color: CubeObject.sideColors[5], texCoord: simd_float2(0, 1)),
-        Vertex(position: simd_float3(-1, 1, 1), color: CubeObject.sideColors[5], texCoord: simd_float2(1, 1)),
-        Vertex(position: simd_float3(-1, -0.3, 1), color: CubeObject.sideColors[5], texCoord: simd_float2(1, 0)),
+        Vertex(position: simd_float3(1, 1, 1), color: [1, 0, 0, 1], texCoord: [1, 0]),
+        Vertex(position: simd_float3(-1, 1, 1), color: [0, 1, 0, 1], texCoord: [0, 0]),
+        Vertex(position: simd_float3(-1, -1, 1), color: [0, 0, 1, 1], texCoord: [0, 1]),
         
-        Vertex(position: simd_float3(1, 1, 1), color: CubeObject.sideColors[5], texCoord: simd_float2(0, 1)),
-        Vertex(position: simd_float3(-1, -0.3, 1), color: CubeObject.sideColors[5], texCoord: simd_float2(1, 0)),
-        Vertex(position: simd_float3(1, -0.3, 1), color: CubeObject.sideColors[5], texCoord: simd_float2(0, 0))
+        Vertex(position: simd_float3(1, 1, 1), color: [1, 0, 0, 1], texCoord: [1, 0]),
+        Vertex(position: simd_float3(-1, -1, 1), color: [0, 0, 1, 1], texCoord: [0, 1]),
+        Vertex(position: simd_float3(1, -1, 1), color: [1, 0, 1, 1], texCoord: [1, 1])
     ]
 
     init(vertexBuffer: MTLBuffer? = nil) {
