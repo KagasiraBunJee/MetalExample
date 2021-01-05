@@ -28,6 +28,7 @@ struct RasterizerData {
     float4 color;
     float2 texCoords;
     int haveTexture;
+    float time;
 };
 
 vertex RasterizerData first_vertex_shader(const device Uniforms& uniforms [[ buffer(0) ]],
@@ -38,18 +39,26 @@ vertex RasterizerData first_vertex_shader(const device Uniforms& uniforms [[ buf
     rd.color = vertexIn.color;
     rd.texCoords = vertexIn.texCoords;
     rd.haveTexture = vertexIn.haveTexture;
+    rd.time = uniforms.time;
     return rd;
 }
 
-fragment float4 first_fragment_shader(RasterizerData rd [[ stage_in ]],
-                                     texture2d<half> colorTexture [[ texture(0) ]],
-                                      sampler           sampler2D [[ sampler(0) ]]) {
-    return rd.color;
+fragment half4 first_fragment_shader(RasterizerData rd [[ stage_in ]]) {
+    float2 texCoords = rd.texCoords;
+    
+    float4 color = rd.color;
+//    return half4(color.r, color.g, color.b, color.a);
+    float x = sin((texCoords.x + rd.time) * 20);
+//    float x = sin(texCoords.x);
+    float y = 0;
+    float z = 0;
+    float4 newColor = float4(x, y, z, 1);
+    return half4(newColor.r, newColor.g, newColor.b, newColor.a);
     // Sample the texture to obtain a color
-    if (rd.haveTexture == 0) {
-        return float4(rd.color);
-    }
-    const half4 colorSample = colorTexture.sample(sampler2D, rd.texCoords);
+//    if (rd.haveTexture == 0) {
+//        return float4(rd.color);
+//    }
+//    const half4 colorSample = colorTexture.sample(sampler2D, rd.texCoords);
     // return the color of the texture
-    return float4(colorSample);
+//    return float4(colorSample);
 }

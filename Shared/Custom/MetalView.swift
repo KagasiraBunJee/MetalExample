@@ -14,11 +14,13 @@ struct MetalView {
     class Coordinator: NSObject, VideoPlaybackDelegate {
         var parent: MetalView
         let renderer: Renderer
+        let controllable = ControllableNode()
         
         init(parent: MetalView, scaleRatio: Float) {
             self.parent = parent
             self.renderer = Renderer(device: Engine.device, screenAspectRatio: scaleRatio)
             self.renderer.scene.camera.origin = [0, 0, 7]
+            self.renderer.scene.root.addChild(node: controllable)
         }
     }
     

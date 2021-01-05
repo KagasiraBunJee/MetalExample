@@ -7,6 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		858D5C9025A396A9007FF1D9 /* ControllableNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 858D5C8F25A396A9007FF1D9 /* ControllableNode.swift */; };
+		858D5C9125A396A9007FF1D9 /* ControllableNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 858D5C8F25A396A9007FF1D9 /* ControllableNode.swift */; };
+		858D5C9725A3AFB0007FF1D9 /* Keycode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 858D5C9625A3AFB0007FF1D9 /* Keycode.swift */; };
+		858D5C9825A3AFB0007FF1D9 /* Keycode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 858D5C9625A3AFB0007FF1D9 /* Keycode.swift */; };
+		858D5C9E25A51866007FF1D9 /* SquareObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 858D5C9D25A51866007FF1D9 /* SquareObject.swift */; };
+		858D5C9F25A51866007FF1D9 /* SquareObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 858D5C9D25A51866007FF1D9 /* SquareObject.swift */; };
 		96010FFB2593D23500F7BAA6 /* float4x4+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96010FFA2593D23500F7BAA6 /* float4x4+Extension.swift */; };
 		96010FFC2593D23500F7BAA6 /* float4x4+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96010FFA2593D23500F7BAA6 /* float4x4+Extension.swift */; };
 		960110022593DFE300F7BAA6 /* MeshCoords+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 960110012593DFE300F7BAA6 /* MeshCoords+Extension.swift */; };
@@ -103,6 +109,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		858D5C8F25A396A9007FF1D9 /* ControllableNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControllableNode.swift; sourceTree = "<group>"; };
+		858D5C9625A3AFB0007FF1D9 /* Keycode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keycode.swift; sourceTree = "<group>"; };
+		858D5C9D25A51866007FF1D9 /* SquareObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SquareObject.swift; sourceTree = "<group>"; };
 		96010FFA2593D23500F7BAA6 /* float4x4+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "float4x4+Extension.swift"; sourceTree = "<group>"; };
 		960110012593DFE300F7BAA6 /* MeshCoords+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MeshCoords+Extension.swift"; sourceTree = "<group>"; };
 		960110082593FD5200F7BAA6 /* particles.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = particles.metal; sourceTree = "<group>"; };
@@ -222,6 +231,8 @@
 				9610A7F52591547D00605E51 /* shader.metal */,
 				961D3D3325915064004B87A7 /* MetalView.swift */,
 				9610A8282592005F00605E51 /* VideoRenderView.swift */,
+				858D5C8F25A396A9007FF1D9 /* ControllableNode.swift */,
+				858D5C9625A3AFB0007FF1D9 /* Keycode.swift */,
 			);
 			path = Custom;
 			sourceTree = "<group>";
@@ -254,6 +265,7 @@
 				9640DE9525938AD000BCF32A /* GameObject.swift */,
 				9601100F2594032000F7BAA6 /* MetalParticle.swift */,
 				9601102B2594B30500F7BAA6 /* CubeObject.swift */,
+				858D5C9D25A51866007FF1D9 /* SquareObject.swift */,
 			);
 			path = Objects;
 			sourceTree = "<group>";
@@ -556,10 +568,13 @@
 				9610A8052591D81B00605E51 /* VideoPlaybackService.swift in Sources */,
 				9603CFD625937168008FC87F /* SIMD+Extension.swift in Sources */,
 				9610A7F62591547D00605E51 /* shader.metal in Sources */,
+				858D5C9025A396A9007FF1D9 /* ControllableNode.swift in Sources */,
 				96E67C0325912C4400080323 /* MainView.swift in Sources */,
 				9640DE8E25937E5E00BCF32A /* Float+Extension.swift in Sources */,
+				858D5C9E25A51866007FF1D9 /* SquareObject.swift in Sources */,
 				96E67BDE25912B1E00080323 /* ContentView.swift in Sources */,
 				96D2D3C12595376000907F16 /* BufferManager.swift in Sources */,
+				858D5C9725A3AFB0007FF1D9 /* Keycode.swift in Sources */,
 				968A71E125A285C2008843A5 /* Node.swift in Sources */,
 				968A720525A294C4008843A5 /* Uniforms.swift in Sources */,
 				968A71F725A28916008843A5 /* GLKMatrix4+Extension.swift in Sources */,
@@ -596,10 +611,13 @@
 				9610A8062591D81B00605E51 /* VideoPlaybackService.swift in Sources */,
 				9603CFD725937168008FC87F /* SIMD+Extension.swift in Sources */,
 				9610A7F72591547D00605E51 /* shader.metal in Sources */,
+				858D5C9125A396A9007FF1D9 /* ControllableNode.swift in Sources */,
 				96E67C0425912C4400080323 /* MainView.swift in Sources */,
 				9640DE8F25937E5E00BCF32A /* Float+Extension.swift in Sources */,
+				858D5C9F25A51866007FF1D9 /* SquareObject.swift in Sources */,
 				96E67BDF25912B1E00080323 /* ContentView.swift in Sources */,
 				96D2D3C22595376000907F16 /* BufferManager.swift in Sources */,
+				858D5C9825A3AFB0007FF1D9 /* Keycode.swift in Sources */,
 				968A71E225A285C2008843A5 /* Node.swift in Sources */,
 				968A720625A294C4008843A5 /* Uniforms.swift in Sources */,
 				968A71F825A28916008843A5 /* GLKMatrix4+Extension.swift in Sources */,
