@@ -7,14 +7,14 @@
 
 import MetalKit
 
-protocol Renderable {
+protocol Renderable: class {
     func render(time: Float,
                 renderer: Renderer,
                 encoder: MTLRenderCommandEncoder,
                 parentTransform: matrix_float4x4)
 }
 
-protocol Updatable {
+protocol Updatable: class {
     func update(time: Float)
 }
 

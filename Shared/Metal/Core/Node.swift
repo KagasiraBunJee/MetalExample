@@ -31,11 +31,10 @@ class Node: CoordProps {
 }
 
 extension Node: Renderable {
+    @objc
     func render(time: Float, renderer: Renderer, encoder: MTLRenderCommandEncoder, parentTransform: matrix_float4x4) {
-        rotation *= simd_quatf(angle: Float(15).radians * time, axis: [0.5, 1, -1])
         var currentTransform = parentTransform * objectMatrix
         if let gameObject = self.object {
-//            rotation.x += sin(time)
             encoder.setVertexBytes(&currentTransform, length: matrix_float4x4.stride, index: 1)
             gameObject.encode(encoder)
         }

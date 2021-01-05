@@ -29,6 +29,7 @@ class RendererScene: Renderable, Updatable {
                 encoder: MTLRenderCommandEncoder,
                 parentTransform: matrix_float4x4)
     {
+        Engine.GameTime.updateTime(deltaTime: time)
         root.render(time: time, renderer: renderer, encoder: encoder, parentTransform: sceneMatrix)
     }
 }
