@@ -16,4 +16,12 @@ class Engine {
             totalTime += deltaTime
         }
     }
+    
+    class Input {
+        static var previousMouseLoc: CGPoint = .zero
+        static var mouseLocation: CGPoint = .zero
+        static var mouseDeltaLocation: CGPoint = .zero
+        
+        static var zoomValue: Float = 0
+    }
 }
