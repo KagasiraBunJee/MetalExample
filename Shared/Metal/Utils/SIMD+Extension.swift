@@ -31,6 +31,16 @@ extension simd_float3: MetalSizable {
 }
 extension simd_float4: MetalSizable {}
 
+extension simd_quatf {
+    static var identity = simd_quatf(angle: 0, axis: [1, 0, 0])
+    
+    var matrix4x4: matrix_float4x4 {
+        var m = matrix_float4x4(self)
+        m[3][3] = 1
+        return m
+    }
+}
+
 #if os(iOS)
 extension MTLClearColor {
     static func from(_ uiColor: UIColor) -> MTLClearColor {

@@ -31,6 +31,10 @@ extension matrix_float4x4 {
         self = matrix_multiply(self, result)
     }
     
+    mutating func rotate (quat: simd_quatf) {
+        self = matrix_multiply(self, quat.matrix4x4)
+    }
+    
     mutating func rotate (angle: Float, _ axis: simd_float3) {
         var result = matrix_identity_float4x4
         
