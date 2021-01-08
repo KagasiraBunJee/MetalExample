@@ -5,7 +5,7 @@
 //  Created by Sergei on 1/4/21.
 //
 
-import Foundation
+import MetalKit
 import simd
 #if os(macOS)
 import AppKit
@@ -25,8 +25,6 @@ class ControllableNode: Node {
     private var vidTexSource: VideoTexture?
     
     var cubes: [CubeObject] = []
-//    let square = SquareObject()
-    var event: Any?
     
     var moveDir: MoveDirection = .none
     var rotate: Bool = false
@@ -37,19 +35,19 @@ class ControllableNode: Node {
         generateCubes()
         vidTexSource = VideoTexture(videoUrl: Bundle.main.url(forResource: "videoplayback", withExtension: "mp4")!)
         vidTexSource?.play(repeat: true)
-        event = NSEvent.addLocalMonitorForEvents(matching: [.keyDown, .leftMouseDragged, .keyUp]) { [weak self] (event) -> NSEvent? in
-            if event.type == .keyDown || event.type == .keyUp {
-                if let dir = MoveDirection(rawValue: event.keyCode), event.type == .keyDown {
-                    self?.moveDir = dir
-                } else {
-                    self?.moveDir = .none
-                }
-            } else if event.type == .leftMouseDragged {
-                debugPrint(event)
-            }
-            
-            return event
-        }
+//        event = NSEvent.addLocalMonitorForEvents(matching: [.keyDown, .leftMouseDragged, .keyUp]) { [weak self] (event) -> NSEvent? in
+//            if event.type == .keyDown || event.type == .keyUp {
+//                if let dir = MoveDirection(rawValue: event.keyCode), event.type == .keyDown {
+//                    self?.moveDir = dir
+//                } else {
+//                    self?.moveDir = .none
+//                }
+//            } else if event.type == .leftMouseDragged {
+//                debugPrint(event)
+//            }
+//
+//            return event
+//        }
     }
     
     private func generateCubes() {

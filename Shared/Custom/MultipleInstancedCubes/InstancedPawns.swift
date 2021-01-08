@@ -57,7 +57,7 @@ class InstancedPawns: Node {
     
     override func render(time: Float, renderer: Renderer, encoder: MTLRenderCommandEncoder, parentTransform: matrix_float4x4) {
         let bufferPointer = objectsCoordBuffer.contents().bindMemory(to: matrix_float4x4.self, capacity: children.count)
-        rotation *= simd_quatf(angle: Float(15 * sin(Engine.GameTime.totalTime)).radians * time, axis: [0, 1, -1])
+//        rotation *= simd_quatf(angle: Float(15 * sin(Engine.GameTime.totalTime)).radians * time, axis: [0, 1, -1])
         
         position.z -= sin(Engine.GameTime.totalTime) / 2
         
