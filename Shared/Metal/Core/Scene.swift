@@ -9,7 +9,7 @@ import MetalKit
 
 class RendererScene: Renderable, Updatable {
     let root = Node()
-    var camera = MainCamera(origin: [0, 1, 5],
+    var camera = MainCamera(origin: [0, 1, 3],
                             look: [0, 0, -1],
                             up: [0, 1, 0],
                             fovYDegrees: 50,
@@ -17,7 +17,6 @@ class RendererScene: Renderable, Updatable {
                             zNear: 0.001,
                             zFar: 1000.0)
     var sceneMatrix = matrix_identity_float4x4
-    
     var clearColor: MTLClearColor = .from(.blue)
     
     func update(time: Float) {
@@ -29,7 +28,13 @@ class RendererScene: Renderable, Updatable {
                 encoder: MTLRenderCommandEncoder,
                 parentTransform: matrix_float4x4)
     {
+        let velocity: Float = 20
         Engine.GameTime.updateTime(deltaTime: time)
+//        root.rotation *= simd_quatf(angle: Float(15).radians * time, axis: [0.5, 1, 0])
+//        root.rotation *= simd_quatf(angle: Float(15).radians * time, axis: [Float(Engine.Input.mouseDeltaLocation.y) * time, Float(Engine.Input.mouseDeltaLocation.x) * time, 0])
+        root.rotation.x += Float(Engine.Input.mouseDeltaLocation.y) * time
+        root.rotation.y += Float(Engine.Input.mouseDeltaLocation.x) * time
+        root.position.z = Engine.Input.zoomValue
         root.render(time: time, renderer: renderer, encoder: encoder, parentTransform: sceneMatrix)
     }
 }

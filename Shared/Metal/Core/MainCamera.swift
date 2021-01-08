@@ -6,6 +6,9 @@
 //
 
 import MetalKit
+#if os(macOS)
+import AppKit
+#endif
 
 class MainCamera {
     
@@ -32,6 +35,8 @@ class MainCamera {
     public var viewMatrix: matrix_float4x4 {
         return Math.makeLook(eye: origin, look: look, up: up)
     }
+    
+    var events: Any?
     
 //    public var viewMatrix: matrix_float4x4 {
 //        var identity = matrix_identity_float4x4

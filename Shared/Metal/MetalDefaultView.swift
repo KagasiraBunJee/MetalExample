@@ -9,6 +9,8 @@ import MetalKit
 
 class MetalCustomView: MTKView {
     
+    private var nsEvents: Any?
+    
     var vertexBuffer: MTLBuffer?
     
     required init(coder: NSCoder) {
@@ -26,6 +28,43 @@ class MetalCustomView: MTKView {
         self.colorPixelFormat = .bgra8Unorm
         self.depthStencilPixelFormat = .depth32Float
         self.clearColor = .from(.orange)
+        
+        #if os(macOS)
+        let mask: NSEvent.EventTypeMask = [
+            .leftMouseDragged,
+            .leftMouseDown,
+            .scrollWheel,
+            .leftMouseUp,
+            .keyUp
+        ]
+        nsEvents = NSEvent.addLocalMonitorForEvents(matching: mask) { (event) -> NSEvent? in
+            switch event.type {
+            case .leftMouseUp:
+                Engine.Input.mouseDeltaLocation = .zero
+            case .leftMouseDragged:
+                Engine.Input.mouseLocation = event.locationInWindow
+                Engine.Input.mouseDeltaLocation = CGPoint(x: event.locationInWindow.x - Engine.Input.previousMouseLoc.x,
+                                             y: event.locationInWindow.y - Engine.Input.previousMouseLoc.y)
+            case .leftMouseDown:
+                Engine.Input.previousMouseLoc = event.locationInWindow
+            case .scrollWheel:
+                Engine.Input.mouseDeltaLocation = CGPoint(x: event.scrollingDeltaX, y: event.scrollingDeltaY)
+                debugPrint(event.scrollingDeltaX, event.scrollingDeltaY)
+            case .keyUp:
+                if event.modifierFlags.intersection(.deviceIndependentFlagsMask).contains(.shift) {
+                    if event.keyCode == Keycode.equals {
+                        Engine.Input.zoomValue += 0.1
+                    } else if event.keyCode == Keycode.minus {
+                        Engine.Input.zoomValue -= 0.1
+                    }
+                }
+            default: break
+            }
+            return event
+        }
+        #else
+        return nil
+        #endif
     }
     
 //    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {

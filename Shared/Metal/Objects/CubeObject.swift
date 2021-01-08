@@ -10,6 +10,8 @@ import VideoToolbox
 
 class CubeObject: GameObject {
     
+//    var texture: MTLTexture = MTLT
+    
     static var sideColors: [simd_float4] = [
         // left
         simd_float4(.random, 1),
@@ -92,6 +94,19 @@ class CubeObject: GameObject {
 
     init(vertexBuffer: MTLBuffer? = nil) {
         super.init(vertices: CubeObject.cubeVertecies, vertexBuffer: vertexBuffer)
+        let texLoader = MTKTextureLoader(device: Engine.device!)
+        let tex = try? texLoader.newTexture(name: "no_cover", scaleFactor: 1.0, bundle: .main, options: [.generateMipmaps: true])
+        
+        
+        let samplerDescriptor = MTLSamplerDescriptor()
+        samplerDescriptor.normalizedCoordinates = true
+        samplerDescriptor.minFilter = .linear
+        samplerDescriptor.magFilter = .linear
+        samplerDescriptor.mipFilter = .linear
+        let sampler = Engine.device?.makeSamplerState(descriptor: samplerDescriptor)
+        guard let newSampler = sampler, let loadedTex = tex else { fatalError("no sampler created") }
+        
+        material = Material(texture: loadedTex, samplerState: newSampler)
     }
 }
 
