@@ -74,6 +74,7 @@ extension Renderer: MTKViewDelegate {
         renderCommandEncoder.setFragmentBuffer(uniformBuffer, offset: 0, index: 0)
         
         scene.render(time: 1.0/Float(view.preferredFramesPerSecond), renderer: self, encoder: renderCommandEncoder, parentTransform: matrix_identity_float4x4)
+        
         renderCommandEncoder.endEncoding()
         
         commandBuffer?.addCompletedHandler({ [weak self] (_) in
