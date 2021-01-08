@@ -61,19 +61,20 @@ extension Renderer: MTKViewDelegate {
         let uniformBuffer = uniformBufferManager.nextSync()
         let uniformContents = uniformBuffer.contents().bindMemory(to: Uniforms.self, capacity: 1)
         
-        uniformContents.pointee.time = 0
+        uniformContents.pointee.time = Engine.GameTime.totalTime
         uniformContents.pointee.view = scene.camera.viewMatrix
         uniformContents.pointee.inverseView = scene.camera.viewMatrix.inverse
         uniformContents.pointee.viewProjection = scene.camera.projectionMatrix * scene.camera.viewMatrix
         uniformContents.pointee.resolution = [
-            Int32(size.width * UIScreen.main.scale),
-            Int32(size.height * UIScreen.main.scale)
+            Int32(size.width),
+            Int32(size.height)
         ]
         
         renderCommandEncoder.setVertexBuffer(uniformBuffer, offset: 0, index: 0)
         renderCommandEncoder.setFragmentBuffer(uniformBuffer, offset: 0, index: 0)
         
         scene.render(time: 1.0/Float(view.preferredFramesPerSecond), renderer: self, encoder: renderCommandEncoder, parentTransform: matrix_identity_float4x4)
+        
         renderCommandEncoder.endEncoding()
         
         commandBuffer?.addCompletedHandler({ [weak self] (_) in

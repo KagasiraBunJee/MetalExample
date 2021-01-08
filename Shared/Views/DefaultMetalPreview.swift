@@ -8,12 +8,10 @@
 import SwiftUI
 
 struct DefaultMetalPreview: View {
+    
     var body: some View {
-        GeometryReader { geometry in
-            MetalView()
-                .frame(width: geometry.size.width, height: geometry.size.height)
-                .navigationTitle("Default render")
-        }
+        MetalView()
+            .navigationTitle("Default render")
     }
 }
 

@@ -13,14 +13,15 @@ public final class VideoTexture {
     private let playerItemVideoOutput: AVPlayerItemVideoOutput
     private let textureCache: CVMetalTextureCache
     
-    init?(renderer: Renderer, videoUrl: URL) {
+    init?(videoUrl: URL) {
         var textCache: CVMetalTextureCache?
         guard let device = Engine.device else { return nil }
+        let textureAttrs: [String: Any] = [String(kCVMetalTextureStorageMode):MTLStorageMode.private]
         if CVMetalTextureCacheCreate(
             kCFAllocatorDefault,
             nil,
             device,
-            nil,
+            textureAttrs as CFDictionary,
             &textCache
         ) != kCVReturnSuccess {
             debugPrint("Unable to allocate texture cache.")
@@ -83,20 +84,19 @@ public final class VideoTexture {
         
         let width = CVPixelBufferGetWidth(pixelBuffer)
         let height = CVPixelBufferGetHeight(pixelBuffer)
-        
+        let textureAttrs: [String: Any] = [String(kCVMetalTextureStorageMode):MTLStorageMode.private]
         var cvTextureOut: CVMetalTexture?
         CVMetalTextureCacheCreateTextureFromImage(
             kCFAllocatorDefault,
             self.textureCache,
             pixelBuffer,
-            nil,
+            textureAttrs as CFDictionary,
             .bgra8Unorm,
             width,
             height,
             0,
             &cvTextureOut
         )
-        
         guard let cvTexture = cvTextureOut, let inputTexture = CVMetalTextureGetTexture(cvTexture) else {
             debugPrint("Failed to create metal texture")
             return nil

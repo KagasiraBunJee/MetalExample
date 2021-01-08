@@ -9,9 +9,9 @@ import MetalKit
 
 struct Vertex: MetalSizable {
     var position: simd_float3
+    var normal: simd_float3 = .zero
     var color: simd_float4
     var texCoord: simd_float2 = .zero
-    var haveTexture: Int = 0
 }
 
 protocol Mesh: class {
@@ -23,42 +23,29 @@ protocol Mesh: class {
     
     // Lifecycle
     func encode(_ encoder: MTLRenderCommandEncoder)
-    func update(deltaTime: Float)
 }
 
 class GameObject: Mesh {
     private var vertices: [Vertex]
     private var vertexBuffer: MTLBuffer?
-//    private var objectMatrixBuffer: MTLBuffer?
-    private var pipelineState: MTLRenderPipelineState?
-    private var objectMatrix: matrix_float4x4 {
-        var initial = matrix_identity_float4x4
-        initial.translate(position)
-        initial.scale(scale)
-        initial.rotate(angle: rotation.x, .xAxis)
-        initial.rotate(angle: rotation.y, .yAxis)
-        initial.rotate(angle: rotation.z, .zAxis)
-        return initial
-    }
+    private(set) var vertexDescriptor = MTLVertexDescriptor()
 
     var position: simd_float3 = .zero
     var scale: simd_float3 = .one
     var rotation: simd_float3 = .zero
     
+    var material: Material?
+    
     var vertexCount: Int {
         return vertices.count
     }
+    var instances: Int = 1
+    
+    var meshes: (modelIOMeshes: [MDLMesh], metalKitMeshes: [MTKMesh])?
     
     init(vertices: [Vertex], vertexBuffer: MTLBuffer?) {
         self.vertices = vertices
         self.vertexBuffer = Engine.device?.makeBuffer(bytes: vertices, length: Vertex.stride(vertices.count), options: .storageModeShared)
-//        objectMatrixBuffer = Engine.device?.makeBuffer(length: matrix_float4x4.stride, options: .storageModeShared)
-        
-        let library = Engine.device?.makeDefaultLibrary()
-        let vertexFunction = library?.makeFunction(name: "first_vertex_shader")
-        let fragmentFunction = library?.makeFunction(name: "first_fragment_shader")
-        
-        let vertexDescriptor = MTLVertexDescriptor()
         
         //position
         vertexDescriptor.attributes[0].format = .float3
@@ -75,32 +62,99 @@ class GameObject: Mesh {
         vertexDescriptor.attributes[2].bufferIndex = 2
         vertexDescriptor.attributes[2].offset = simd_float3.size + simd_float4.size
         
-        //hasTexture
-        vertexDescriptor.attributes[3].format = .int
+        vertexDescriptor.layouts[2].stride = Vertex.stride
+    }
+    
+    init(objectName: String) {
+        guard let assetUrl = Bundle.main.url(forResource: objectName, withExtension: "obj"),
+              let device = Engine.device else {
+            fatalError("no mesh or render device found")
+        }
+        
+        //position
+        vertexDescriptor.attributes[0].format = .float3
+        vertexDescriptor.attributes[0].bufferIndex = 2
+        vertexDescriptor.attributes[0].offset = 0
+        
+        //normal
+        vertexDescriptor.attributes[1].format = .float3
+        vertexDescriptor.attributes[1].bufferIndex = 2
+        vertexDescriptor.attributes[1].offset = simd_float3.size
+        
+        //color
+        vertexDescriptor.attributes[2].format = .float4
+        vertexDescriptor.attributes[2].bufferIndex = 2
+        vertexDescriptor.attributes[2].offset = simd_float3.size + simd_float3.size
+        
+        //texCoords
+        vertexDescriptor.attributes[3].format = .float2
         vertexDescriptor.attributes[3].bufferIndex = 2
-        vertexDescriptor.attributes[3].offset = simd_float3.size + simd_float4.size + simd_float2.size
+        vertexDescriptor.attributes[3].offset = simd_float3.size + simd_float4.size + simd_float3.size
         
         vertexDescriptor.layouts[2].stride = Vertex.stride
         
-        let renderPipelineStateDescriptor = MTLRenderPipelineDescriptor()
-        renderPipelineStateDescriptor.colorAttachments[0].pixelFormat = .bgra8Unorm
-        renderPipelineStateDescriptor.vertexFunction = vertexFunction
-        renderPipelineStateDescriptor.fragmentFunction = fragmentFunction
-        renderPipelineStateDescriptor.vertexDescriptor = vertexDescriptor
-        renderPipelineStateDescriptor.depthAttachmentPixelFormat = .depth32Float
+        let meshDescriptor = MTKModelIOVertexDescriptorFromMetal(vertexDescriptor)
+        (meshDescriptor.attributes[0] as? MDLVertexAttribute)?.name = MDLVertexAttributePosition
+        (meshDescriptor.attributes[1] as? MDLVertexAttribute)?.name = MDLVertexAttributeNormal
+        (meshDescriptor.attributes[2] as? MDLVertexAttribute)?.name = MDLVertexAttributeColor
+        (meshDescriptor.attributes[3] as? MDLVertexAttribute)?.name = MDLVertexAttributeTextureCoordinate
+        let bufferAllocator = MTKMeshBufferAllocator(device: device)
         
-        pipelineState = try? Engine.device?.makeRenderPipelineState(descriptor: renderPipelineStateDescriptor)
+        let asset = MDLAsset(url: assetUrl, vertexDescriptor: meshDescriptor, bufferAllocator: bufferAllocator)
+        do {
+            meshes = try MTKMesh.newMeshes(asset: asset, device: device)
+        } catch let error {
+            debugPrint(error)
+        }
+        
+        vertices = []
+        
+        let samplerDescriptor = MTLSamplerDescriptor()
+        samplerDescriptor.normalizedCoordinates = true
+        samplerDescriptor.minFilter = .linear
+        samplerDescriptor.magFilter = .linear
+        samplerDescriptor.mipFilter = .linear
+        let sampler = Engine.device?.makeSamplerState(descriptor: samplerDescriptor)
+        guard let newSampler = sampler else { fatalError("no sampler created") }
+        
+        material = Material(texture: nil, samplerState: newSampler)
     }
     
     func encode(_ encoder: MTLRenderCommandEncoder) {
-        guard let pipelineState = pipelineState else { return }
-        encoder.setRenderPipelineState(pipelineState)
-        memcpy(vertexBuffer?.contents(), &vertices, Vertex.stride(vertices.count))
-        encoder.setVertexBuffer(vertexBuffer, offset: 0, index: 2)
-        encoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: vertexCount)
+        
+        if let material = material {
+            var unsafeMaterial = material
+            encoder.setFragmentBytes(&unsafeMaterial, length: Material.stride, index: 1)
+            
+            if let texture = material.texture, material.shouldUseTex {
+                encoder.setFragmentTexture(texture, index: 0)
+            }
+            encoder.setFragmentSamplerState(material.samplerState, index: 0)
+        }
+        
+        if meshes != nil {
+            encodeMeshes(encoder)
+        } else {
+            memcpy(vertexBuffer?.contents(), &vertices, Vertex.stride(vertices.count))
+            encoder.setVertexBuffer(vertexBuffer, offset: 0, index: 2)
+        }
     }
     
-    func update(deltaTime: Float) {
-        position.x += sin(deltaTime)
+    func encodeMeshes(_ encoder: MTLRenderCommandEncoder) {
+        guard let meshes = meshes else { return }
+        for mesh in meshes.metalKitMeshes {
+            for vertexBuffer in mesh.vertexBuffers {
+                encoder.setVertexBuffer(vertexBuffer.buffer, offset: vertexBuffer.offset, index: 2)
+                for subMesh in mesh.submeshes {
+                    encoder.drawIndexedPrimitives(
+                        type: subMesh.primitiveType,
+                        indexCount: subMesh.indexCount,
+                        indexType: subMesh.indexType,
+                        indexBuffer: subMesh.indexBuffer.buffer,
+                        indexBufferOffset: subMesh.indexBuffer.offset,
+                        instanceCount: instances)
+                }
+            }
+        }
     }
 }

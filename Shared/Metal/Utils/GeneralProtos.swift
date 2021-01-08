@@ -7,20 +7,21 @@
 
 import MetalKit
 
-protocol Renderable {
+protocol Renderable: class {
     func render(time: Float,
                 renderer: Renderer,
                 encoder: MTLRenderCommandEncoder,
                 parentTransform: matrix_float4x4)
 }
 
-protocol Updatable {
+protocol Updatable: class {
     func update(time: Float)
 }
 
 protocol CoordProps {
     var position: simd_float3 { get set }
     var scale: simd_float3 { get set }
-    var rotation: simd_quatf { get set }
+    var rotation: simd_float3 { get set }
+//    var rotation: simd_quatf { get set }
     var objectMatrix: matrix_float4x4 { get }
 }

@@ -18,16 +18,22 @@ struct Uniforms {
 
 struct VertexIn {
     float3 position [[ attribute(0) ]];
-    float4 color [[ attribute(1) ]];
-    float2 texCoords [[ attribute(2) ]];
-    int haveTexture [[ attribute(3) ]];
+    float3 normal [[ attribute(1) ]];
+    float4 color [[ attribute(2) ]];
+    float2 texCoords [[ attribute(3) ]];
 };
 
 struct RasterizerData {
     float4 position [[ position ]];
     float4 color;
     float2 texCoords;
-    int haveTexture;
+    float time;
+};
+
+struct Material {
+    float4 color;
+    bool shouldUseMatColor;
+    bool shouldUseTex;
 };
 
 vertex RasterizerData first_vertex_shader(const device Uniforms& uniforms [[ buffer(0) ]],
@@ -37,19 +43,38 @@ vertex RasterizerData first_vertex_shader(const device Uniforms& uniforms [[ buf
     rd.position = uniforms.viewProjection * objectCoord * float4(vertexIn.position, 1);
     rd.color = vertexIn.color;
     rd.texCoords = vertexIn.texCoords;
-    rd.haveTexture = vertexIn.haveTexture;
+    rd.time = uniforms.time;
     return rd;
 }
 
-fragment float4 first_fragment_shader(RasterizerData rd [[ stage_in ]],
-                                     texture2d<half> colorTexture [[ texture(0) ]],
-                                      sampler           sampler2D [[ sampler(0) ]]) {
-    return rd.color;
-    // Sample the texture to obtain a color
-    if (rd.haveTexture == 0) {
-        return float4(rd.color);
+vertex RasterizerData instanced_vertex_shader(const device Uniforms& uniforms [[ buffer(0) ]],
+                                          const VertexIn vertexIn [[ stage_in ]],
+                                          const device float4x4 *objectCoord [[ buffer(1) ]],
+                                          uint instanceId [[ instance_id ]]) {
+    RasterizerData rd;
+    rd.position = uniforms.viewProjection * objectCoord[instanceId] * float4(vertexIn.position, 1);
+    rd.color = vertexIn.color;
+    rd.texCoords = vertexIn.texCoords;
+    rd.time = uniforms.time;
+    return rd;
+}
+
+fragment half4 first_fragment_shader(RasterizerData rd [[ stage_in ]],
+                                     constant Material &material [[ buffer(1) ]],
+                                     sampler sampler2d [[ sampler(0) ]],
+                                     texture2d<float, access::sample> texture [[ texture(0) ]]) {
+    if (material.shouldUseTex && rd.texCoords.x != 0 && rd.texCoords.y != 0) {
+        float4 texColor = texture.sample(sampler2d, rd.texCoords).rgba;
+        return half4(texColor.r, texColor.g, texColor.b, texColor.a);
     }
-    const half4 colorSample = colorTexture.sample(sampler2D, rd.texCoords);
-    // return the color of the texture
-    return float4(colorSample);
+    float4 color = material.color;
+    return half4(color.r, color.g, color.b, color.a);
+//    float2 texCoords = rd.texCoords;
+//
+//    float4 color = rd.color;
+//    float x = sin((texCoords.x + rd.time) * 20);
+//    float y = 0;
+//    float z = 0;
+//    float4 newColor = float4(x, y, z, 1);
+//    return half4(newColor.r, newColor.g, newColor.b, newColor.a);
 }
