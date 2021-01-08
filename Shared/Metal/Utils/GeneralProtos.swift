@@ -21,6 +21,7 @@ protocol Updatable: class {
 protocol CoordProps {
     var position: simd_float3 { get set }
     var scale: simd_float3 { get set }
-    var rotation: simd_quatf { get set }
+    var rotation: simd_float3 { get set }
+//    var rotation: simd_quatf { get set }
     var objectMatrix: matrix_float4x4 { get }
 }
