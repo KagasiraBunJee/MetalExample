@@ -42,12 +42,22 @@ class MetalCustomView: MTKView {
             case .leftMouseUp:
                 Engine.Input.mouseDeltaLocation = .zero
             case .leftMouseDragged:
+                if event.modifierFlags.intersection(.deviceIndependentFlagsMask).contains(.shift) {
+                    Engine.Input.movementType = .rotate
+                } else {
+                    Engine.Input.movementType = .translate
+                }
                 Engine.Input.mouseLocation = event.locationInWindow
                 Engine.Input.mouseDeltaLocation = CGPoint(x: event.locationInWindow.x - Engine.Input.previousMouseLoc.x,
                                              y: event.locationInWindow.y - Engine.Input.previousMouseLoc.y)
             case .leftMouseDown:
                 Engine.Input.previousMouseLoc = event.locationInWindow
             case .scrollWheel:
+                if event.modifierFlags.intersection(.deviceIndependentFlagsMask).contains(.shift) {
+                    Engine.Input.movementType = .rotate
+                } else {
+                    Engine.Input.movementType = .translate
+                }
                 Engine.Input.mouseDeltaLocation = CGPoint(x: event.scrollingDeltaX, y: event.scrollingDeltaY)
                 debugPrint(event.scrollingDeltaX, event.scrollingDeltaY)
             case .keyUp:
@@ -63,7 +73,7 @@ class MetalCustomView: MTKView {
             return event
         }
         #else
-        return nil
+        return
         #endif
     }
     

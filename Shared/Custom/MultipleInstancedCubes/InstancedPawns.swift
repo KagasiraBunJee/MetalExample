@@ -45,7 +45,11 @@ class InstancedPawns: Node {
         renderPipelineStateDescriptor.vertexDescriptor = object?.vertexDescriptor
         renderPipelineStateDescriptor.depthAttachmentPixelFormat = .depth32Float
         
-        pipelineState = try? Engine.device?.makeRenderPipelineState(descriptor: renderPipelineStateDescriptor)
+        do {
+            pipelineState = try Engine.device?.makeRenderPipelineState(descriptor: renderPipelineStateDescriptor)
+        } catch let error {
+            debugPrint(error)
+        }
     }
     
     private func generateCubes() {

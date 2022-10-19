@@ -28,6 +28,8 @@ class Node: CoordProps {
         return result
     }
     
+    var name = "Node"
+    
     var object: GameObject?
     
     init(object: GameObject? = nil) {

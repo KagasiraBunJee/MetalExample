@@ -51,17 +51,17 @@ class ControllableNode: Node {
     }
     
     private func generateCubes() {
-//        let cubesLength = 12
-//        let cubesInColumns = 3
-//        for i in -6..<cubesLength/2 {
-//            let subNode = Node()
-//            subNode.position.x = Float(i % cubesInColumns) * (subNode.scale.x * 2)
-//            subNode.position.y = floor(Float(-i)/Float(cubesInColumns)) * (subNode.scale.y * 2)
-//            let cube = CubeObject()
-//            cubes.append(cube)
-//            subNode.object = cube
-//            addChild(node: subNode)
-//        }
+        let cubesLength = 12
+        let cubesInColumns = 3
+        for i in -6..<cubesLength/2 {
+            let subNode = Node()
+            subNode.position.x = Float(i % cubesInColumns) * (subNode.scale.x * 2)
+            subNode.position.y = floor(Float(-i)/Float(cubesInColumns)) * (subNode.scale.y * 2)
+            let cube = CubeObject()
+            cubes.append(cube)
+            subNode.object = cube
+            addChild(node: subNode)
+        }
     }
     
     override func render(time: Float,

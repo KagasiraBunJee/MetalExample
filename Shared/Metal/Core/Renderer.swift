@@ -66,10 +66,11 @@ extension Renderer: MTKViewDelegate {
         uniformContents.pointee.inverseView = scene.camera.viewMatrix.inverse
         uniformContents.pointee.viewProjection = scene.camera.projectionMatrix * scene.camera.viewMatrix
         uniformContents.pointee.resolution = [
-            Int32(size.width),
-            Int32(size.height)
+            Float(size.width),
+            Float(size.height)
         ]
         
+        renderCommandEncoder.setTriangleFillMode(Engine.viewMode)
         renderCommandEncoder.setVertexBuffer(uniformBuffer, offset: 0, index: 0)
         renderCommandEncoder.setFragmentBuffer(uniformBuffer, offset: 0, index: 0)
         

@@ -47,22 +47,7 @@ class GameObject: Mesh {
         self.vertices = vertices
         self.vertexBuffer = Engine.device?.makeBuffer(bytes: vertices, length: Vertex.stride(vertices.count), options: .storageModeShared)
         
-        //position
-        vertexDescriptor.attributes[0].format = .float3
-        vertexDescriptor.attributes[0].bufferIndex = 2
-        vertexDescriptor.attributes[0].offset = 0
-        
-        //color
-        vertexDescriptor.attributes[1].format = .float4
-        vertexDescriptor.attributes[1].bufferIndex = 2
-        vertexDescriptor.attributes[1].offset = simd_float3.size
-        
-        //texCoords
-        vertexDescriptor.attributes[2].format = .float2
-        vertexDescriptor.attributes[2].bufferIndex = 2
-        vertexDescriptor.attributes[2].offset = simd_float3.size + simd_float4.size
-        
-        vertexDescriptor.layouts[2].stride = Vertex.stride
+        vertexDescription()
     }
     
     init(objectName: String) {
@@ -70,7 +55,65 @@ class GameObject: Mesh {
               let device = Engine.device else {
             fatalError("no mesh or render device found")
         }
+        vertices = []
+
+        vertexDescription()
         
+        let meshDescriptor = MTKModelIOVertexDescriptorFromMetal(vertexDescriptor)
+        (meshDescriptor.attributes[0] as? MDLVertexAttribute)?.name = MDLVertexAttributePosition
+        (meshDescriptor.attributes[1] as? MDLVertexAttribute)?.name = MDLVertexAttributeNormal
+        (meshDescriptor.attributes[2] as? MDLVertexAttribute)?.name = MDLVertexAttributeColor
+        (meshDescriptor.attributes[3] as? MDLVertexAttribute)?.name = MDLVertexAttributeTextureCoordinate
+        let bufferAllocator = MTKMeshBufferAllocator(device: device)
+        
+        let asset = MDLAsset(url: assetUrl, vertexDescriptor: meshDescriptor, bufferAllocator: bufferAllocator)
+        do {
+            meshes = try MTKMesh.newMeshes(asset: asset, device: device)
+        } catch let error {
+            debugPrint(error)
+        }
+        
+        let samplerDescriptor = MTLSamplerDescriptor()
+        samplerDescriptor.normalizedCoordinates = true
+        samplerDescriptor.minFilter = .linear
+        samplerDescriptor.magFilter = .linear
+        samplerDescriptor.mipFilter = .linear
+        let sampler = Engine.device?.makeSamplerState(descriptor: samplerDescriptor)
+        guard let newSampler = sampler else { fatalError("no sampler created") }
+        
+        material = Material(texture: nil, samplerState: newSampler)
+    }
+    
+    init(mesh: MDLMesh) {
+        guard let device = Engine.device else {
+            fatalError("no mesh or render device found")
+        }
+        vertices = []
+        vertexDescription()
+        
+        let meshDescriptor = MTKModelIOVertexDescriptorFromMetal(vertexDescriptor)
+        (meshDescriptor.attributes[0] as? MDLVertexAttribute)?.name = MDLVertexAttributePosition
+        (meshDescriptor.attributes[1] as? MDLVertexAttribute)?.name = MDLVertexAttributeNormal
+        (meshDescriptor.attributes[2] as? MDLVertexAttribute)?.name = MDLVertexAttributeColor
+        (meshDescriptor.attributes[3] as? MDLVertexAttribute)?.name = MDLVertexAttributeTextureCoordinate
+        
+        do {
+            meshes = ([mesh], [try MTKMesh(mesh: mesh, device: device)])
+        } catch let error {
+            debugPrint(error)
+        }
+        
+//
+//        let samplerDescriptor = MTLSamplerDescriptor()
+//        samplerDescriptor.normalizedCoordinates = true
+//        samplerDescriptor.minFilter = .linear
+//        samplerDescriptor.magFilter = .linear
+//        samplerDescriptor.mipFilter = .linear
+//        let sampler = Engine.device?.makeSamplerState(descriptor: samplerDescriptor)
+//        guard let newSampler = sampler else { fatalError("no sampler created") }
+    }
+    
+    func vertexDescription() {
         //position
         vertexDescriptor.attributes[0].format = .float3
         vertexDescriptor.attributes[0].bufferIndex = 2
@@ -92,32 +135,6 @@ class GameObject: Mesh {
         vertexDescriptor.attributes[3].offset = simd_float3.size + simd_float4.size + simd_float3.size
         
         vertexDescriptor.layouts[2].stride = Vertex.stride
-        
-        let meshDescriptor = MTKModelIOVertexDescriptorFromMetal(vertexDescriptor)
-        (meshDescriptor.attributes[0] as? MDLVertexAttribute)?.name = MDLVertexAttributePosition
-        (meshDescriptor.attributes[1] as? MDLVertexAttribute)?.name = MDLVertexAttributeNormal
-        (meshDescriptor.attributes[2] as? MDLVertexAttribute)?.name = MDLVertexAttributeColor
-        (meshDescriptor.attributes[3] as? MDLVertexAttribute)?.name = MDLVertexAttributeTextureCoordinate
-        let bufferAllocator = MTKMeshBufferAllocator(device: device)
-        
-        let asset = MDLAsset(url: assetUrl, vertexDescriptor: meshDescriptor, bufferAllocator: bufferAllocator)
-        do {
-            meshes = try MTKMesh.newMeshes(asset: asset, device: device)
-        } catch let error {
-            debugPrint(error)
-        }
-        
-        vertices = []
-        
-        let samplerDescriptor = MTLSamplerDescriptor()
-        samplerDescriptor.normalizedCoordinates = true
-        samplerDescriptor.minFilter = .linear
-        samplerDescriptor.magFilter = .linear
-        samplerDescriptor.mipFilter = .linear
-        let sampler = Engine.device?.makeSamplerState(descriptor: samplerDescriptor)
-        guard let newSampler = sampler else { fatalError("no sampler created") }
-        
-        material = Material(texture: nil, samplerState: newSampler)
     }
     
     func encode(_ encoder: MTLRenderCommandEncoder) {

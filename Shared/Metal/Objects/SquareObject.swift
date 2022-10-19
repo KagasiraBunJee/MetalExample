@@ -19,6 +19,24 @@ class SquareObject: GameObject {
     ]
     
     init(vertexBuffer: MTLBuffer? = nil) {
-        super.init(vertices: SquareObject.squareVertecies, vertexBuffer: vertexBuffer)
+        super.init(vertices: SquareObject.squareVertecies, vertexBuffer: nil)
+//        let bufferAllocator = MTKMeshBufferAllocator(device: Engine.device!)
+//
+//        let sphereMesh = MDLMesh(boxWithExtent: vector_float3(1, 1, 1), segments: vector_uint3(3, 3, 3), inwardNormals: false, geometryType: .triangles, allocator: bufferAllocator)
+//        super.init(mesh: sphereMesh)
+        
+//        let texLoader = MTKTextureLoader(device: Engine.device!)
+//        let tex = try? texLoader.newTexture(name: "no_cover", scaleFactor: 1.0, bundle: .main, options: [.generateMipmaps: true])
+//
+//
+//        let samplerDescriptor = MTLSamplerDescriptor()
+//        samplerDescriptor.normalizedCoordinates = true
+//        samplerDescriptor.minFilter = .linear
+//        samplerDescriptor.magFilter = .linear
+//        samplerDescriptor.mipFilter = .linear
+//        let sampler = Engine.device?.makeSamplerState(descriptor: samplerDescriptor)
+//        guard let newSampler = sampler, let loadedTex = tex else { fatalError("no sampler created") }
+//
+//        material = Material(texture: loadedTex, samplerState: newSampler)
     }
 }

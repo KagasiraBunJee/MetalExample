@@ -65,6 +65,7 @@
 		9610A8442592BF4A00605E51 /* MetalDefaultView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9610A8422592BF4A00605E51 /* MetalDefaultView.swift */; };
 		961D3D3425915064004B87A7 /* MetalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 961D3D3325915064004B87A7 /* MetalView.swift */; };
 		961D3D3525915064004B87A7 /* MetalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 961D3D3325915064004B87A7 /* MetalView.swift */; };
+		9640B906268CBCA900F05F06 /* Waves.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9640B905268CBCA900F05F06 /* Waves.swift */; };
 		9640DE83259375A900BCF32A /* Engine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9640DE82259375A900BCF32A /* Engine.swift */; };
 		9640DE84259375A900BCF32A /* Engine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9640DE82259375A900BCF32A /* Engine.swift */; };
 		9640DE8E25937E5E00BCF32A /* Float+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9640DE8D25937E5E00BCF32A /* Float+Extension.swift */; };
@@ -73,6 +74,8 @@
 		9640DE9725938AD000BCF32A /* GameObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9640DE9525938AD000BCF32A /* GameObject.swift */; };
 		965BF02125957B4D00E89621 /* replace.png in Resources */ = {isa = PBXBuildFile; fileRef = 965BF02025957B4D00E89621 /* replace.png */; };
 		965BF02225957B4D00E89621 /* replace.png in Resources */ = {isa = PBXBuildFile; fileRef = 965BF02025957B4D00E89621 /* replace.png */; };
+		9689CCAC2694A20700086537 /* Square.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9689CCAB2694A20700086537 /* Square.swift */; };
+		9689CCAD2694A20700086537 /* Square.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9689CCAB2694A20700086537 /* Square.swift */; };
 		968A71D625A2807D008843A5 /* VideoTexture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 968A71D525A2807D008843A5 /* VideoTexture.swift */; };
 		968A71D725A2807D008843A5 /* VideoTexture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 968A71D525A2807D008843A5 /* VideoTexture.swift */; };
 		968A71E125A285C2008843A5 /* Node.swift in Sources */ = {isa = PBXBuildFile; fileRef = 968A71E025A285C2008843A5 /* Node.swift */; };
@@ -156,10 +159,12 @@
 		9610A8372592BE1B00605E51 /* DefaultMetalPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultMetalPreview.swift; sourceTree = "<group>"; };
 		9610A8422592BF4A00605E51 /* MetalDefaultView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalDefaultView.swift; sourceTree = "<group>"; };
 		961D3D3325915064004B87A7 /* MetalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalView.swift; sourceTree = "<group>"; };
+		9640B905268CBCA900F05F06 /* Waves.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Waves.swift; sourceTree = "<group>"; };
 		9640DE82259375A900BCF32A /* Engine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Engine.swift; sourceTree = "<group>"; };
 		9640DE8D25937E5E00BCF32A /* Float+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Float+Extension.swift"; sourceTree = "<group>"; };
 		9640DE9525938AD000BCF32A /* GameObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameObject.swift; sourceTree = "<group>"; };
 		965BF02025957B4D00E89621 /* replace.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = replace.png; sourceTree = "<group>"; };
+		9689CCAB2694A20700086537 /* Square.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Square.swift; sourceTree = "<group>"; };
 		968A71D525A2807D008843A5 /* VideoTexture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoTexture.swift; sourceTree = "<group>"; };
 		968A71E025A285C2008843A5 /* Node.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Node.swift; sourceTree = "<group>"; };
 		968A71E825A285E6008843A5 /* Scene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Scene.swift; sourceTree = "<group>"; };
@@ -285,6 +290,8 @@
 		9610A8272592004200605E51 /* Custom */ = {
 			isa = PBXGroup;
 			children = (
+				9689CCAA2694A1ED00086537 /* Square */,
+				9640B904268CBC7E00F05F06 /* Waves */,
 				852DEF0425A7958A00092B5C /* 3dObject */,
 				852DEF0325A7957600092B5C /* MultipleInstancedCubes */,
 				852DEF0225A7956700092B5C /* SingleCubeExample */,
@@ -301,6 +308,14 @@
 				9610A8372592BE1B00605E51 /* DefaultMetalPreview.swift */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		9640B904268CBC7E00F05F06 /* Waves */ = {
+			isa = PBXGroup;
+			children = (
+				9640B905268CBCA900F05F06 /* Waves.swift */,
+			);
+			path = Waves;
 			sourceTree = "<group>";
 		};
 		9640DE812593759600BCF32A /* Core */ = {
@@ -341,6 +356,14 @@
 				9610A8422592BF4A00605E51 /* MetalDefaultView.swift */,
 			);
 			path = Metal;
+			sourceTree = "<group>";
+		};
+		9689CCAA2694A1ED00086537 /* Square */ = {
+			isa = PBXGroup;
+			children = (
+				9689CCAB2694A20700086537 /* Square.swift */,
+			);
+			path = Square;
 			sourceTree = "<group>";
 		};
 		968A71D325A28061008843A5 /* Texture */ = {
@@ -630,6 +653,7 @@
 				9640DE83259375A900BCF32A /* Engine.swift in Sources */,
 				960110102594032000F7BAA6 /* MetalParticle.swift in Sources */,
 				968A71D625A2807D008843A5 /* VideoTexture.swift in Sources */,
+				9689CCAC2694A20700086537 /* Square.swift in Sources */,
 				9610A8302592B8F500605E51 /* Renderer.swift in Sources */,
 				96E67BE025912B1E00080323 /* Persistence.swift in Sources */,
 				96E67BDA25912B1E00080323 /* ProjectExamples.xcdatamodeld in Sources */,
@@ -642,6 +666,7 @@
 				9603CFD625937168008FC87F /* SIMD+Extension.swift in Sources */,
 				9610A7F62591547D00605E51 /* shader.metal in Sources */,
 				858D5C9025A396A9007FF1D9 /* ControllableNode.swift in Sources */,
+				9640B906268CBCA900F05F06 /* Waves.swift in Sources */,
 				96E67C0325912C4400080323 /* MainView.swift in Sources */,
 				9640DE8E25937E5E00BCF32A /* Float+Extension.swift in Sources */,
 				858D5C9E25A51866007FF1D9 /* SquareObject.swift in Sources */,
@@ -660,6 +685,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9689CCAD2694A20700086537 /* Square.swift in Sources */,
 				9610A8392592BE1B00605E51 /* DefaultMetalPreview.swift in Sources */,
 				960110032593DFE300F7BAA6 /* MeshCoords+Extension.swift in Sources */,
 				961D3D3525915064004B87A7 /* MetalView.swift in Sources */,

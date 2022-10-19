@@ -19,6 +19,9 @@ struct MainView: View {
                     VideoRenderView()
                         .frame(width: geometry.size.width, height: 200)
                 }
+                Button("Open app") {
+                    UIApplication.shared.openURL(URL(string: "com.smartsuite://")!)
+                }
             }
             .navigationTitle("Some Title")
         }

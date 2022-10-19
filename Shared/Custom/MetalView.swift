@@ -11,6 +11,8 @@ import AVFoundation
 
 struct MetalView {
     
+    @Binding var renderer: Renderer?
+    
     class Coordinator: NSObject, VideoPlaybackDelegate {
         var parent: MetalView
         let renderer: Renderer
@@ -18,11 +20,24 @@ struct MetalView {
         init(parent: MetalView, scaleRatio: Float) {
             self.parent = parent
             self.renderer = Renderer(device: Engine.device, screenAspectRatio: scaleRatio)
-            self.renderer.scene.camera.origin = [0, 0, 3]
+            self.renderer.scene.camera.origin = [0, 0, 2]
+            let node = Node()
+            let node1 = Node()
+            let node2 = Node()
+            let square = Square()
+            
+            node.name = "node 1"
+            node1.name = "node 2"
+            node2.name = "node 3"
+            
+            node.addChild(node: node1)
+            node1.addChild(node: node2)
+            node2.addChild(node: CustomMesh())
             self.renderer.scene.root.addChild(node:
 //                ControllableNode(renderer: renderer)
 //                InstancedPawns(cubesWide: 10, cubesHigh: 10, cubesBack: 10)
-                                                CustomMesh()
+//                                                CustomMesh()
+                                                node
             )
         }
     }
@@ -55,6 +70,10 @@ extension MetalView: NSViewRepresentable {
         return view
     }
     
-    func updateNSView(_ nsView: MetalCustomView, context: Context) {}
+    func updateNSView(_ nsView: MetalCustomView, context: Context) {
+        DispatchQueue.main.async {
+            self.renderer = context.coordinator.renderer
+        }
+    }
 }
 #endif
